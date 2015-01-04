@@ -4,7 +4,7 @@ var express = require('express')
   	, server = require('http').createServer(app);
 
 var port = process.env.PORT||5566;
-var proxyPort = 5567;
+var proxyPort = 80;
 var net = require('net');
 var Logger = require('./Logger.js');
 
