@@ -1,3 +1,4 @@
+require('newrelic');
 var express = require('express')
 	, app = express()
   	, server = require('http').createServer(app);
@@ -6,7 +7,7 @@ var port = process.env.PORT||5566;
 var proxyPort = 5567;
 var net = require('net');
 var Logger = require('./Logger.js');
-require('newrelic');
+
 
 //server
 server.listen(port);
