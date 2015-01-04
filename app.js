@@ -4,24 +4,10 @@ var express = require('express')
   	, server = require('http').createServer(app);
 
 var port = process.env.PORT||5566;
-var proxyPort = 80;
 var net = require('net');
 var Logger = require('./Logger.js');
 
 
-//server
-server.listen(port);
-
-//send game index.html
-app.use(express.favicon());
-app.get('/', function (req, res) {
-
-  Logger.log("Server Checked");
-
-  res.sendfile(__dirname + '/client/hello.html');
-});
-Logger.log("Server Alive-Checker Running at port" + port);
- 
 // Keep track of the chat clients
 var servers = {};
 // Start a TCP Server
@@ -41,6 +27,6 @@ net.createServer(function (socket) {
      Logger.log("Disconnected : "+socket.name);
   });
  
-}).listen(proxyPort);
+}).listen(port);
  
-Logger.log("Log Server Running web socket at port " + proxyPort);
+Logger.log("Log Server Running web socket at port " + port);
