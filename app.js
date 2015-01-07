@@ -9,15 +9,15 @@ var ws = require("nodejs-websocket");
 
 // Start a TCP Server
 var server = ws.createServer(function (conn) {
-    console.log("New connection")
+    Logger.log("New connection")
     conn.on("text", function (str) {
 
         //console.log(conn);
-        console.log("Received "+str)
+        Logger.log(str)
         //conn.sendText(str.toUpperCase()+"!!!")
     })
     conn.on("close", function (code, reason) {
-        console.log("Connection closed")
+        Logger.log("Connection closed")
     })
 }).listen(port);
  
