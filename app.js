@@ -3,29 +3,22 @@ var express = require('express')
   	, server = require('http').createServer(app);
 
 var port = process.env.PORT||5566;
-var net = require('net');
+//var net = require('net');
 var Logger = require('./Logger.js');
+var ws = require("nodejs-websocket");
 
-
-// Keep track of the chat clients
-var servers = {};
 // Start a TCP Server
-net.createServer(function (socket) {
- 
-  // Identify this client
-  socket.name = socket.remoteAddress + ":" + socket.remotePort;
+var server = ws.createServer(function (conn) {
+    console.log("New connection")
+    conn.on("text", function (str) {
 
-  Logger.log("Connected : "+socket.name);
- 
-  socket.on('data', function (data) {
-
-    Logger.log(data);
-  });
- 
-  socket.on('end', function () {
-     Logger.log("Disconnected : "+socket.name);
-  });
- 
+        //console.log(conn);
+        console.log("Received "+str)
+        //conn.sendText(str.toUpperCase()+"!!!")
+    })
+    conn.on("close", function (code, reason) {
+        console.log("Connection closed")
+    })
 }).listen(port);
  
 Logger.log("Log Server Running web socket at port " + port);
