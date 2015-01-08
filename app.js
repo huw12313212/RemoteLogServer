@@ -39,8 +39,8 @@ var server = ws.createServer(function (conn) {
         data.I = parseFloat(json["R-PID-I"]);
         data.D = parseFloat(json["R-PID-D"]);
         data.yaw = parseFloat(json["y"]);
-        data.pitch = parseFloat(json["r"]);
-        data.roll = parseFloat(json["p"]);
+        data.pitch = parseFloat(json["p"]);
+        data.roll = parseFloat(json["r"]);
 
         io.emit('data', data);
         Logger.log(JSON.stringify(data));
