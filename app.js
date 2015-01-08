@@ -31,12 +31,16 @@ var server = ws.createServer(function (conn) {
         data.min = parseFloat(array[2]);
         data.sec = parseFloat(array[3].split('.')[0]);
         data.millisecond =  (parseFloat(array[3])*1000)%1000;
-        data.P = parseFloat(array[25]);
-        data.I = parseFloat(array[31]);
-        data.D = parseFloat(array[37]);
-        data.yaw = parseFloat(array[7]);
-        data.pitch = parseFloat(array[13]);
-        data.roll = parseFloat(array[19]);
+
+        jsonStr = str.split("]")[1];
+        json = JSON.parse(jsonStr);
+
+        data.P = parseFloat(json["R-PID-P"]);
+        data.I = parseFloat(json["R-PID-I"]);
+        data.D = parseFloat(json["R-PID-D"]);
+        data.yaw = parseFloat(json["y"]);
+        data.pitch = parseFloat(json["r"]);
+        data.roll = parseFloat(json["p"]);
 
         io.emit('data', data);
         Logger.log(JSON.stringify(data));
