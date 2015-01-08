@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script type="text/javascript" src="./canvasjs.min.js"></script>
+	<script type="text/javascript" src="./socket.io-1.2.0.js"></script>
+	<script type="text/javascript">
+	window.onload = function () {
+		// dataPoints
+		var dataPointsYaw = [];
+		var dataPointsRoll = [];
+		var dataPointsPitch = [];
+		var dataPointsP = [];
+		var dataPointsI = [];
+		var dataPointsD = [];
+
+		var dataLength = 500;
+
+		var chart = new CanvasJS.Chart("chartContainer",{
+			zoomEnabled: true,
+			title: {
+				text: "Gyroscope Monitor"		
+			},
+			toolTip: {
+				shared: true
+				
+			},
+			legend: {
+				verticalAlign: "top",
+				horizontalAlign: "center",
+                                fontSize: 14,
+				fontWeight: "bold",
+				fontFamily: "calibri",
+				fontColor: "dimGrey"
+			},
+			axisX: {
+				title: "Time (sec)"
+			},
+			axisY:{
+				prefix: '',
+				includeZero: false
+			}, 
+			data: [{ 
+				// dataSeries1
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Yaw",
+				dataPoints: dataPointsYaw
+			},
+			{				
+				// dataSeries2
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Roll" ,
+				dataPoints: dataPointsRoll
+			},
+			{				
+				// dataSeries2
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Pitch" ,
+				dataPoints: dataPointsPitch
+			}
+			],
+          legend:{
+            cursor:"pointer",
+            itemclick : function(e) {
+              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                e.dataSeries.visible = false;
+              }
+              else {
+                e.dataSeries.visible = true;
+              }
+              chart.render();
+            }
+          }
+		});
+
+		var chart2 = new CanvasJS.Chart("chartContainer2",{
+			zoomEnabled: true,
+			title: {
+				text: "PID Monitor"		
+			},
+			toolTip: {
+				shared: true
+				
+			},
+			legend: {
+				verticalAlign: "top",
+				horizontalAlign: "center",
+                                fontSize: 14,
+				fontWeight: "bold",
+				fontFamily: "calibri",
+				fontColor: "dimGrey"
+			},
+			axisX: {
+				title: "Time (sec)"
+			},
+			axisY:{
+				prefix: '',
+				includeZero: false
+			}, 
+			data: [{ 
+				// dataSeries1
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "P",
+				dataPoints: dataPointsP
+			},
+			{				
+				// dataSeries2
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "I" ,
+				dataPoints: dataPointsI
+			},
+			{				
+				// dataSeries2
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "D" ,
+				dataPoints: dataPointsD
+			}
+			],
+          legend:{
+            cursor:"pointer",
+            itemclick : function(e) {
+              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                e.dataSeries.visible = false;
+              }
+              else {
+                e.dataSeries.visible = true;
+              }
+              chart2.render();
+            }
+          }
+		});
+
+
+		var updateInterval = 30;
+		var time = new Date;
+		// starting at 9.30 am
+
+		var updateData = function (data)
+		{
+			time.setHours(data.hour);
+			time.setMinutes(data.min);
+			time.setSeconds(data.sec);
+			time.setMilliseconds(data.millisecond);
+
+			dataPointsYaw.push({
+				x: time.getTime(),
+				y: data.yaw
+			});
+			dataPointsRoll.push({
+				x: time.getTime(),
+				y: data.roll
+			});
+			dataPointsPitch.push({
+				x: time.getTime(),
+				y: data.pitch
+			});
+
+			dataPointsP.push({
+				x: time.getTime(),
+				y: data.P
+			});
+			dataPointsI.push({
+				x: time.getTime(),
+				y: data.I
+			});
+			dataPointsD.push({
+				x: time.getTime(),
+				y: data.D
+			});
+
+
+			if (dataPointsYaw.length > dataLength)
+			{
+				dataPointsYaw.shift();		
+				dataPointsRoll.shift();	
+				dataPointsPitch.shift();		
+				dataPointsP.shift();		
+				dataPointsI.shift();	
+				dataPointsD.shift();	
+			}
+
+			// updating legend text with  updated with y Value 
+			chart.options.data[0].legendText = "Yaw " + data.yaw;
+			chart.options.data[1].legendText = "Roll " + data.roll; 
+			chart.options.data[2].legendText = "Pitch " + data.pitch; 
+			chart2.options.data[0].legendText = "P " + data.P;
+			chart2.options.data[1].legendText = "I " + data.I; 
+			chart2.options.data[2].legendText = "D " + data.D; 
+
+			chart.render();
+			chart2.render();
+
+		}
+
+		var testTime = new Date;
+
+		var test = function () {
+
+			testTime.setTime(testTime.getTime()+updateInterval);
+
+			var data = {};
+		    data.hour = testTime.getHours();
+			data.min = testTime.getMinutes();
+			data.sec = testTime.getSeconds();
+			data.millisecond = testTime.getMilliseconds();
+			data.P = .5 + Math.random() *(-.5-.5);
+			data.I = .5 + Math.random() *(-.5-.5);
+			data.D = .5 + Math.random() *(-.5-.5);
+			data.yaw = Math.random() *(-20-20);
+			data.roll = Math.random() *(-20-20);
+			data.pitch = Math.random() *(-20-20);
+
+			updateData(data);
+		};
+
+		var socket = io();
+		 socket.on('data', function(data){
+		   updateData(data);
+		 });
+
+	}
+	</script>
+
+</head>
+<body>
+	<div id="chartContainer" style="height: 300px; width: 100%;">
+	</div>
+
+	<div id="chartContainer2" style="height: 300px; width: 100%;">
+	</div>
+</body>
+</html>
+
