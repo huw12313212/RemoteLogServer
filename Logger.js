@@ -10,13 +10,13 @@ Logger.log = function(str)
 {
   console.log("["+this.label+"]"+str);
 
-
+/*
   fs.appendFile('log.log', str+"\n", function (err) {
     if (err) 
       {
         throw err;
       }
-  });
+  });*/
 
 }
 
