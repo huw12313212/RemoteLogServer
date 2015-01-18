@@ -34,13 +34,18 @@ var server = ws.createServer(function (conn) {
 
         jsonStr = str.split("]")[1];
         json = JSON.parse(jsonStr);
-
+        // Logger.log(JSON.stringify(json));
         data.P = parseFloat(json["R-PID-P"]);
         data.I = parseFloat(json["R-PID-I"]);
         data.D = parseFloat(json["R-PID-D"]);
         data.yaw = parseFloat(json["y"]);
         data.pitch = parseFloat(json["p"]);
         data.roll = parseFloat(json["r"]);
+        data.motor = [];
+        data.motor.push(parseInt(json["front"]));
+        data.motor.push(parseInt(json["left"]));
+        data.motor.push(parseInt(json["back"]));
+        data.motor.push(parseInt(json["right"]));
 
         io.emit('data', data);
         Logger.log(JSON.stringify(data));

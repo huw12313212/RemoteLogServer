@@ -12,6 +12,10 @@
 		var dataPointsP = [];
 		var dataPointsI = [];
 		var dataPointsD = [];
+		var dataPointMotorFront = [];
+		var dataPointMotorLeft = [];
+		var dataPointMotorBack = [];
+		var dataPointMotorRight = [];
 
 		var dataLength = 500;
 
@@ -141,6 +145,76 @@
           }
 		});
 
+		var chart3 = new CanvasJS.Chart("chartContainer3", {
+			zoomEnabled: true,
+			title: {
+				text: "Motor speed Monitor"		
+			},
+			toolTip: {
+				shared: true
+				
+			},
+			legend: {
+				verticalAlign: "top",
+				horizontalAlign: "center",
+                                fontSize: 14,
+				fontWeight: "bold",
+				fontFamily: "calibri",
+				fontColor: "dimGrey"
+			},
+			axisX: {
+				title: "Time (sec)"
+			},
+			axisY:{
+				prefix: '',
+				includeZero: false
+			}, 
+			data: [{ 
+				// dataSeries1
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Front",
+				dataPoints: dataPointMotorFront
+			},
+			{				
+				// dataSeries2
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Left" ,
+				dataPoints: dataPointMotorLeft
+			},
+			{				
+				// dataSeries2
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Back" ,
+				dataPoints: dataPointMotorBack
+			},
+			{
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: "Right",
+				dataPoints: dataPointMotorRight
+			}
+			],
+          legend:{
+            cursor:"pointer",
+            itemclick : function(e) {
+              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                e.dataSeries.visible = false;
+              }
+              else {
+                e.dataSeries.visible = true;
+              }
+              chart3.render();
+            }
+          }
+		});
+
 
 		var updateInterval = 30;
 		var time = new Date;
@@ -178,6 +252,22 @@
 				x: time.getTime(),
 				y: data.D
 			});
+			dataPointMotorFront.push({
+				x: time.getTime(),
+				y: data.motor[0]
+			});
+			dataPointMotorLeft.push({
+				x: time.getTime(),
+				y: data.motor[1]
+			});
+			dataPointMotorBack.push({
+				x: time.getTime(),
+				y: data.motor[2]
+			});
+			dataPointMotorRight.push({
+				x: time.getTime(),
+				y: data.motor[3]
+			});
 
 
 			if (dataPointsYaw.length > dataLength)
@@ -187,7 +277,11 @@
 				dataPointsPitch.shift();		
 				dataPointsP.shift();		
 				dataPointsI.shift();	
-				dataPointsD.shift();	
+				dataPointsD.shift();
+				dataPointMotorFront.shift();
+				dataPointMotorLeft.shift();
+				dataPointMotorBack.shift();
+				dataPointMotorRight.shift();	
 			}
 
 			// updating legend text with  updated with y Value 
@@ -197,9 +291,14 @@
 			chart2.options.data[0].legendText = "P " + data.P;
 			chart2.options.data[1].legendText = "I " + data.I; 
 			chart2.options.data[2].legendText = "D " + data.D; 
+			chart3.options.data[0].legendText = "Front" + data.motor[0];
+			chart3.options.data[1].legendText = "Left" + data.motor[1];
+			chart3.options.data[2].legendText = "Back" + data.motor[2];
+			chart3.options.data[3].legendText = "Right" + data.motor[3];
 
 			chart.render();
 			chart2.render();
+			chart3.render();
 
 		}
 
@@ -238,6 +337,9 @@
 	</div>
 
 	<div id="chartContainer2" style="height: 300px; width: 100%;">
+	</div>
+
+	<div id="chartContainer3" style="height: 300px; width: 100%">
 	</div>
 </body>
 </html>
